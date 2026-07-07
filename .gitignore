@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+wafer_env/
+
+# Models
+*.keras
+*.h5
+*.pt
+*.pth
+
+# Dataset archives
+*.zip
+*.tar
+*.gz
+
+# TensorBoard
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

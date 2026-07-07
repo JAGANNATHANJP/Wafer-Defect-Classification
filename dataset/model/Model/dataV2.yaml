@@ -1,0 +1,12 @@
+names:
+- Center
+- Donut
+- Edge-Loc
+- Edge-Ring
+- Loc
+- Scratch
+nc: 6
+path: /kaggle/working/dataset
+test: images/test
+train: images/train
+val: images/valid
