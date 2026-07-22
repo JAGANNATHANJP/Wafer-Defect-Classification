@@ -22,3 +22,18 @@ logs/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Dataset
+dataset/
+
+# Generated outputs
+models/
+plots/
+reports/
+results/
+outputs/
+
+logs/
+*.keras
+*.h5
+dataset/
