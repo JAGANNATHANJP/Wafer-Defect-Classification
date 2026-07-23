@@ -118,27 +118,6 @@ def load_datasets():
     )
 
     # -------------------------------------------------
-    # ResNet50 / MobileNetV2 Preprocessing
-    # -------------------------------------------------
-
-    preprocess = tf.keras.applications.resnet50.preprocess_input
-
-    train_ds = train_ds.map(
-        lambda x, y: (preprocess(x), y),
-        num_parallel_calls=AUTOTUNE,
-    )
-
-    val_ds = val_ds.map(
-        lambda x, y: (preprocess(x), y),
-        num_parallel_calls=AUTOTUNE,
-    )
-
-    test_ds = test_ds.map(
-        lambda x, y: (preprocess(x), y),
-        num_parallel_calls=AUTOTUNE,
-    )
-
-    # -------------------------------------------------
     # Performance Optimization
     # -------------------------------------------------
 
