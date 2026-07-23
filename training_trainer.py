@@ -60,11 +60,7 @@ def compile_model(model, learning_rate):
     model.compile(
         optimizer=optimizer,
         loss="sparse_categorical_crossentropy",
-        metrics=[
-            "accuracy",
-            tf.keras.metrics.Precision(name="precision"),
-            tf.keras.metrics.Recall(name="recall"),
-        ],
+        metrics=["accuracy"],
     )
 
     return model

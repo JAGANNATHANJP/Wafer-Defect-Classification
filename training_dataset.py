@@ -122,9 +122,18 @@ def load_datasets():
     # -------------------------------------------------
 
     if CACHE_DATASET:
-        train_ds = train_ds.cache()
-        val_ds = val_ds.cache()
-        test_ds = test_ds.cache()
+        from pathlib import Path
+
+        cache_dir = (
+            Path("/tmp/wafer_cache")
+            if Path("/tmp").exists()
+            else BASE_DIR / "cache"
+        )
+        cache_dir.mkdir(exist_ok=True, parents=True)
+
+        train_ds = train_ds.cache(str(cache_dir / "train_cache"))
+        val_ds = val_ds.cache(str(cache_dir / "val_cache"))
+        test_ds = test_ds.cache(str(cache_dir / "test_cache"))
 
     train_ds = train_ds.shuffle(
         SHUFFLE_BUFFER,
