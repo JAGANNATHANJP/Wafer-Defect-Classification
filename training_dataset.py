@@ -12,6 +12,8 @@ Author: Jagannathan JP
 =========================================================
 """
 
+import os
+import zipfile
 import tensorflow as tf
 from tensorflow.keras import layers
 
@@ -22,6 +24,22 @@ from training_config import *
 # =====================================================
 
 AUTOTUNE = tf.data.AUTOTUNE
+
+
+def ensure_dataset_extracted():
+    """Extracts data.zip into dataset/ if TRAIN_DIR does not exist."""
+    if not TRAIN_DIR.exists():
+        zip_path = BASE_DIR / "data.zip"
+        if zip_path.exists():
+            print(f"Extracting {zip_path} into {BASE_DIR / 'dataset'}...")
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                zip_ref.extractall(BASE_DIR / "dataset")
+            print("Dataset extracted successfully!")
+        else:
+            raise FileNotFoundError(
+                f"Dataset training directory not found at '{TRAIN_DIR}' and zip file '{zip_path}' is missing."
+            )
+
 
 # =====================================================
 # Data Augmentation
@@ -52,6 +70,7 @@ def load_datasets():
     test_ds
     class_names
     """
+    ensure_dataset_extracted()
 
     train_ds = tf.keras.utils.image_dataset_from_directory(
     TRAIN_DIR,
