@@ -172,9 +172,9 @@ def get_dataset_summary(df: Optional[pd.DataFrame]) -> Dict[str, Any]:
         }
 
     if "image_path" in df.columns:
-        for split, keyword in (("train", "train"), ("valid", "valid"), ("test", "test")):
+        for split, keyword in (("train", "train"), ("valid", "valid|validation"), ("test", "test")):
             summary[f"{split}_count"] = int(
-                df["image_path"].astype(str).str.contains(keyword).sum()
+                df["image_path"].astype(str).str.contains(keyword, regex=True).sum()
             )
 
     return summary

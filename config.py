@@ -30,14 +30,14 @@ ASSETS_DIR: Path = BASE_DIR / "assets"
 OUTPUTS_DIR: Path = BASE_DIR / "outputs"
 
 #: Directory containing the dataset.
-DATASET_DIR: Path = BASE_DIR / "dataset"
+DATASET_DIR: Path = BASE_DIR / "dataset" / "data"
 
-#: Directory containing wafer images (train / valid / test).
-IMAGES_DIR: Path = DATASET_DIR / "images" / "images"
+#: Directory containing wafer images (train / validation / test).
+IMAGES_DIR: Path = DATASET_DIR
 
 #: Sub-directories for each dataset split.
 TRAIN_IMAGES_DIR: Path = IMAGES_DIR / "train"
-VALID_IMAGES_DIR: Path = IMAGES_DIR / "valid"
+VALID_IMAGES_DIR: Path = IMAGES_DIR / "validation"
 TEST_IMAGES_DIR: Path = IMAGES_DIR / "test"
 
 #: Path to the dataset CSV file (image_path, class_id).
@@ -82,8 +82,10 @@ CLASS_NAMES: Dict[int, str] = {
     2: "Edge-Loc",
     3: "Edge-Ring",
     4: "Loc",
-    5: "Scratch",
-    6: "Unknown",
+    5: "Near-full",
+    6: "Random",
+    7: "Scratch",
+    8: "none",
 }
 
 #: Ordered list of class names, indexed identically to model output logits.
@@ -99,8 +101,10 @@ CLASS_COLORS: Dict[str, str] = {
     "Edge-Loc": "#FF8B00",
     "Edge-Ring": "#FF5630",
     "Loc": "#36B37E",
+    "Near-full": "#00B8D9",
+    "Random": "#6554C0",
     "Scratch": "#DE350B",
-    "Unknown": "#6B778C",
+    "none": "#505F79",
 }
 
 # ------------------------------------------------------
@@ -125,7 +129,7 @@ INPUT_SHAPE: Tuple[int, int, int] = (IMAGE_SIZE[0], IMAGE_SIZE[1], IMAGE_CHANNEL
 #: Architecture summary string shown on the "Model Information" page.
 MODEL_ARCHITECTURE: str = (
     "Input -> ResNet50 Backbone -> GlobalAveragePooling2D -> "
-    "Dropout -> Dense(256, ReLU) -> Dense(7, Softmax)"
+    "Dropout -> Dense(256, ReLU) -> Dense(9, Softmax)"
 )
 
 #: Metadata describing how the model was trained (used for display only;
@@ -135,9 +139,9 @@ MODEL_METADATA: Dict[str, str] = {
     "Backbone": "ResNet50 (ImageNet pretrained)",
     "Number of Classes": str(NUM_CLASSES),
     "Input Size": f"{IMAGE_SIZE[0]} x {IMAGE_SIZE[1]} x {IMAGE_CHANNELS}",
-    "Training Epochs": "50",
+    "Training Epochs": "5",
     "Optimizer": "Adam",
-    "Loss Function": "Categorical Crossentropy",
+    "Loss Function": "Sparse Categorical Crossentropy",
     "Validation Accuracy": "N/A",
     "Validation Loss": "N/A",
 }

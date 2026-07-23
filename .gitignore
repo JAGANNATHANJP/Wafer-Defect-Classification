@@ -4,46 +4,24 @@ __pycache__/
 
 # Virtual environment
 wafer_env/
+.venv/
+env/
+venv/
 
-# Models
-*.keras
-*.h5
-*.pt
-*.pth
-
-## Dataset
-
-The wafer defect dataset is stored using Git LFS.
-
-After cloning:
-
-```bash
-git lfs install
-git lfs pull
-```
+# Large binaries tracked by Git LFS (see .gitattributes)
+# *.keras and *.zip are tracked via Git LFS
 
 # Dataset archives
 *.tar
 *.gz
 
-# TensorBoard
+# TensorBoard & Cache
 logs/
+cache/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Dataset
-# dataset/
-
-# Generated outputs
-models/
-plots/
-reports/
-results/
-outputs/
-
-logs/
-*.keras
-*.h5
-# dataset/
+# Dataset directory
+# dataset/
