@@ -14,7 +14,7 @@ from training_trainer import (
 from training_evaluate import evaluate_model
 
 from training_config import (
-    CNN_MODEL,
+    BEST_CNN_MODEL,
     FINAL_CNN_MODEL,
 )
 
@@ -45,7 +45,7 @@ history = train_stage1(
     model,
     train_ds,
     val_ds,
-    CNN_MODEL,
+    BEST_CNN_MODEL,
 )
 
 # =====================================================

@@ -116,6 +116,11 @@ FINAL_MOBILENET_MODEL = MODELS_DIR / "final_mobilenet.keras"
 BEST_RESNET50_MODEL = MODELS_DIR / "best_resnet50.keras"
 FINAL_RESNET50_MODEL = MODELS_DIR / "final_resnet50.keras"
 
+# Model path aliases for v4 training scripts
+CNN_MODEL = BEST_CNN_MODEL
+MOBILENET_MODEL = BEST_MOBILENET_MODEL
+RESNET50_MODEL = BEST_RESNET50_MODEL
+
 # =====================================================
 # GPU
 # =====================================================

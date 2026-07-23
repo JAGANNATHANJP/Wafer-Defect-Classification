@@ -72,7 +72,7 @@ history_stage1 = train_stage1(
     model,
     train_ds,
     val_ds,
-    RESNET50_MODEL,
+    BEST_RESNET50_MODEL,
 )
 
 save_history(history_stage1, "stage1_history.csv")
@@ -87,7 +87,7 @@ history_stage2 = fine_tune(
     model,
     train_ds,
     val_ds,
-    RESNET50_MODEL,
+    BEST_RESNET50_MODEL,
 )
 
 save_history(history_stage2, "stage2_history.csv")

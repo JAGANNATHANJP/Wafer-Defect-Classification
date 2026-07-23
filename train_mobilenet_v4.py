@@ -15,7 +15,7 @@ from training_trainer import (
 from training_evaluate import evaluate_model
 
 from training_config import (
-    MOBILENET_MODEL,
+    BEST_MOBILENET_MODEL,
     FINAL_MOBILENET_MODEL,
 )
 
@@ -46,7 +46,7 @@ history_stage1 = train_stage1(
     model,
     train_ds,
     val_ds,
-    MOBILENET_MODEL,
+    BEST_MOBILENET_MODEL,
 )
 
 # =====================================================
@@ -57,7 +57,7 @@ history_stage2 = fine_tune(
     model,
     train_ds,
     val_ds,
-    MOBILENET_MODEL,
+    BEST_MOBILENET_MODEL,
 )
 
 # =====================================================

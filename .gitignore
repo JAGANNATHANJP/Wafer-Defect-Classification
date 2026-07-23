@@ -11,6 +11,17 @@ wafer_env/
 *.pt
 *.pth
 
+## Dataset
+
+The wafer defect dataset is stored using Git LFS.
+
+After cloning:
+
+```bash
+git lfs install
+git lfs pull
+```
+
 # Dataset archives
 *.tar
 *.gz
