@@ -12,7 +12,6 @@ wafer_env/
 *.pth
 
 # Dataset archives
-*.zip
 *.tar
 *.gz
 
@@ -24,7 +23,7 @@ logs/
 Thumbs.db
 
 # Dataset
-dataset/
+# dataset/
 
 # Generated outputs
 models/
@@ -36,4 +35,4 @@ outputs/
 logs/
 *.keras
 *.h5
-dataset/
+# dataset/
