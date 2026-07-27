@@ -85,7 +85,7 @@ FINE_TUNE_LEARNING_RATE = 1e-5
 
 RANDOM_SEED = 42
 
-LAYERS_TO_UNFREEZE = 50
+LAYERS_TO_UNFREEZE = 120
 
 # =====================================================
 # CALLBACKS

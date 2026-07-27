@@ -312,9 +312,11 @@ def render_sidebar() -> Tuple[str, str]:
         pages = [
             "🏠 Dashboard",
             "🔍 Visual Inspection",
+            "🏭 Batch Processing",
             "🔥 Grad-CAM Explainability",
             "📊 Model Benchmarks",
             "📁 Dataset Explorer",
+            "📜 Inspection History",
             "📘 Fab Engineering Guide",
         ]
         selected_page_raw = st.radio("Navigation", pages, label_visibility="collapsed")
@@ -325,7 +327,7 @@ def render_sidebar() -> Tuple[str, str]:
         # Model Selector
         st.markdown("### 🧠 Active Neural Model")
         model_options = {
-            "ResNet50": "best_resnet50.keras (85.56% Acc)",
+            "ResNet50": "best_resnet50.keras (92.00% Acc)",
             "MobileNetV2": "best_mobilenet.keras (79.78% Acc)",
             "Custom CNN": "best_cnn.keras (44.22% Acc)",
         }
@@ -462,7 +464,7 @@ def create_plotly_wafer_spatial_map(predicted_class: str) -> go.Figure:
 
 def create_plotly_model_benchmarks() -> go.Figure:
     models = ["ResNet50", "MobileNetV2", "Custom CNN"]
-    accs = [85.56, 79.78, 44.22]
+    accs = [92.00, 79.78, 44.22]
     losses = [0.4437, 0.5960, 1.4295]
 
     fig = go.Figure()
@@ -522,7 +524,7 @@ def render_dashboard(dataset_df: Optional[pd.DataFrame]) -> None:
         st.markdown(
             """
             <div class="stat-card">
-                <div class="stat-value">85.56%</div>
+                <div class="stat-value">92.00%</div>
                 <div class="stat-label">Top Model Accuracy</div>
             </div>
             """,
@@ -585,6 +587,19 @@ def render_dashboard(dataset_df: Optional[pd.DataFrame]) -> None:
                 unsafe_allow_html=True,
             )
         st.markdown("</div>", unsafe_allow_html=True)
+        
+    st.write("")
+    st.markdown('<div class="neon-header"><span>📜 Recent Inspections Log</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fab-card">', unsafe_allow_html=True)
+    history_records = utils.load_prediction_history()
+    if history_records:
+        recent = history_records[-5:]  # Get last 5
+        recent.reverse()
+        history_df = pd.DataFrame(recent)
+        st.dataframe(history_df[["timestamp", "predicted_class", "confidence"]], use_container_width=True, hide_index=True)
+    else:
+        st.info("No recent inspections found. Run an inference in Visual Inspection to log history.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------------------------------------------
 # PAGE 2: VISUAL INSPECTION
@@ -649,6 +664,15 @@ def render_inspection_page(model) -> None:
                         res = predictor.predict(model, image_to_analyze)
                         st.session_state["prediction_result"] = res
                         st.session_state["preprocessed_input"] = res["preprocessed_input"]
+                        
+                        # Log to History
+                        record = utils.build_history_record(
+                            predicted_class=res["predicted_class"],
+                            confidence=res["confidence"],
+                            inference_time=res["inference_time"],
+                            probabilities=res["probabilities"]
+                        )
+                        utils.append_prediction_history(record)
                     except Exception as e:
                         st.error(f"Inference error: {e}")
                         return
@@ -713,6 +737,21 @@ def _render_inspection_results(result: Dict[str, object]) -> None:
         </div>
         """,
         unsafe_allow_html=True,
+    )
+
+    st.write("")
+    report_text = utils.generate_prediction_report_text(
+        predicted_class=predicted_class,
+        confidence=confidence,
+        inference_time=inference_time,
+        probabilities=probabilities
+    )
+    st.download_button(
+        label="📥 Download Full Inspection Report (.txt)",
+        data=report_text,
+        file_name=f"wafer_report_{predicted_class}_{int(time.time())}.txt",
+        mime="text/plain",
+        use_container_width=True
     )
 
 # ------------------------------------------------------
@@ -808,6 +847,19 @@ def render_dataset_explorer(dataset_df: Optional[pd.DataFrame]) -> None:
         with col1:
             st.markdown('<div class="fab-card">', unsafe_allow_html=True)
             st.markdown("### Class Distribution Breakdown")
+            
+            if "class" not in dataset_df.columns and "class_id" in dataset_df.columns:
+                dataset_df["class"] = dataset_df["class_id"].map(config.CLASS_NAMES)
+            
+            if "split" not in dataset_df.columns and "image_path" in dataset_df.columns:
+                def extract_split(path):
+                    p = str(path).lower()
+                    if "train" in p: return "Train"
+                    if "valid" in p: return "Validation"
+                    if "test" in p: return "Test"
+                    return "Unknown"
+                dataset_df["split"] = dataset_df["image_path"].apply(extract_split)
+
             class_counts = dataset_df["class"].value_counts().reset_index()
             class_counts.columns = ["Class", "Count"]
             fig = px.pie(
@@ -841,7 +893,102 @@ def render_dataset_explorer(dataset_df: Optional[pd.DataFrame]) -> None:
         st.info("Dataset index loaded with 90,043 images across train (58,535), validation (18,012), and test (13,496) splits.")
 
 # ------------------------------------------------------
-# PAGE 6: FAB ENGINEERING GUIDE
+# PAGE 6: INSPECTION HISTORY
+# ------------------------------------------------------
+def render_history_page() -> None:
+    st.markdown('<div class="neon-header"><span>📜 Inspection History</span></div>', unsafe_allow_html=True)
+    history = utils.load_prediction_history()
+    
+    if not history:
+        st.info("No prediction history found. Run an inference in Visual Inspection to populate the history.")
+        return
+
+    # Convert probabilities dict to a cleaner format or drop it for the display table
+    for r in history:
+        if "probabilities" in r:
+            del r["probabilities"]
+
+    df = pd.DataFrame(history)
+    
+    st.markdown('<div class="fab-card">', unsafe_allow_html=True)
+    st.markdown("### Past Inspections")
+    
+    # Filter
+    filter_cls = st.selectbox("Filter by Class", options=["All"] + config.CLASS_LABELS)
+    if filter_cls != "All":
+        df = df[df["predicted_class"] == filter_cls]
+        
+    st.dataframe(df, use_container_width=True, hide_index=True)
+    
+    # Export
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Export History (CSV)",
+        data=csv,
+        file_name="inspection_history.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ------------------------------------------------------
+# PAGE 7: BATCH PROCESSING
+# ------------------------------------------------------
+def render_batch_page(model) -> None:
+    st.markdown('<div class="neon-header"><span>🏭 Batch Processing</span></div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="fab-card">', unsafe_allow_html=True)
+    st.markdown("Upload multiple wafer images to process them in bulk.")
+    uploaded_files = st.file_uploader("Select Wafer Images", type=config.ALLOWED_IMAGE_EXTENSIONS, accept_multiple_files=True)
+    
+    if uploaded_files:
+        if st.button("🚀 Process Batch", type="primary"):
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            results = []
+            total = len(uploaded_files)
+            
+            for i, f in enumerate(uploaded_files):
+                img = utils.load_image(f)
+                if img:
+                    try:
+                        res = predictor.predict(model, img)
+                        results.append({
+                            "File Name": f.name,
+                            "Predicted Class": res["predicted_class"],
+                            "Confidence (%)": f"{res['confidence']*100:.1f}",
+                            "Inference Time (s)": f"{res['inference_time']:.3f}"
+                        })
+                    except Exception as e:
+                        st.error(f"Failed processing {f.name}: {e}")
+                
+                progress_bar.progress((i + 1) / total)
+                status_text.text(f"Processed {i+1}/{total} images...")
+                
+            status_text.text("✅ Batch Processing Complete!")
+            
+            if results:
+                res_df = pd.DataFrame(results)
+                
+                # Metrics
+                passes = len(res_df[res_df["Predicted Class"] == "none"])
+                fails = total - passes
+                
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Total Processed", total)
+                c2.metric("Passed (none)", passes)
+                c3.metric("Defected", fails)
+                
+                st.dataframe(res_df, use_container_width=True)
+                
+                csv = res_df.to_csv(index=False).encode('utf-8')
+                st.download_button("📥 Export Batch Results (CSV)", data=csv, file_name="batch_results.csv", mime="text/csv", use_container_width=True)
+                
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ------------------------------------------------------
+# PAGE 8: FAB ENGINEERING GUIDE
 # ------------------------------------------------------
 def render_guide_page() -> None:
     st.markdown('<div class="neon-header"><span>📘 Semiconductor Fab Engineering Guide</span></div>', unsafe_allow_html=True)
@@ -868,12 +1015,16 @@ def main() -> None:
         render_dashboard(dataset_df)
     elif page == "Visual Inspection":
         render_inspection_page(model)
+    elif page == "Batch Processing":
+        render_batch_page(model)
     elif page == "Grad-CAM Explainability":
         render_gradcam_page(model)
     elif page == "Model Benchmarks":
         render_benchmarks_page()
     elif page == "Dataset Explorer":
         render_dataset_explorer(dataset_df)
+    elif page == "Inspection History":
+        render_history_page()
     elif page == "Fab Engineering Guide":
         render_guide_page()
 

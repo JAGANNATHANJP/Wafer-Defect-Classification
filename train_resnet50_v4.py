@@ -64,6 +64,29 @@ model = build_resnet50()
 
 model.summary()
 
+import os
+import numpy as np
+
+# --------------------------------------------------
+# Compute Class Weights for Imbalanced Dataset
+# --------------------------------------------------
+
+print("\nComputing dynamic class weights...")
+counts = []
+for cls in class_names:
+    # Use TRAIN_DIR from training_config
+    cls_path = TRAIN_DIR / cls
+    counts.append(len(os.listdir(cls_path)))
+
+total = sum(counts)
+class_weights = {}
+for i, count in enumerate(counts):
+    class_weights[i] = (1.0 / count) * (total / len(class_names))
+
+print("Class Weights:")
+for i, name in enumerate(class_names):
+    print(f"  {name:12s}: {class_weights[i]:.4f}")
+
 # --------------------------------------------------
 # Stage 1 Training
 # --------------------------------------------------
@@ -73,6 +96,7 @@ history_stage1 = train_stage1(
     train_ds,
     val_ds,
     BEST_RESNET50_MODEL,
+    class_weight=class_weights,
 )
 
 save_history(history_stage1, "stage1_history.csv")
@@ -88,6 +112,7 @@ history_stage2 = fine_tune(
     train_ds,
     val_ds,
     BEST_RESNET50_MODEL,
+    class_weight=class_weights,
 )
 
 save_history(history_stage2, "stage2_history.csv")

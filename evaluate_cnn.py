@@ -73,7 +73,7 @@ val_ds = val_ds.batch(BATCH_SIZE)
 # ----------------------------
 # Load Model
 # ----------------------------
-model = tf.keras.models.load_model("cnn_wafer_model.keras")
+model = tf.keras.models.load_model("best_cnn.keras")
 
 # ----------------------------
 # Evaluate

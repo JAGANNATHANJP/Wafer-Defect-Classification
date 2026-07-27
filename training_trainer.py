@@ -116,6 +116,7 @@ def train_stage1(
     train_ds,
     val_ds,
     best_model_path,
+    class_weight=None,
 ):
 
     print("\n==============================")
@@ -136,6 +137,8 @@ def train_stage1(
         epochs=EPOCHS_STAGE1,
 
         callbacks=get_callbacks(best_model_path),
+        
+        class_weight=class_weight,
 
     )
 
@@ -150,6 +153,7 @@ def fine_tune(
     train_ds,
     val_ds,
     best_model_path,
+    class_weight=None,
 ):
 
     print("\n==============================")
@@ -175,6 +179,8 @@ def fine_tune(
         epochs=EPOCHS_STAGE2,
 
         callbacks=get_callbacks(best_model_path),
+        
+        class_weight=class_weight,
 
     )
 

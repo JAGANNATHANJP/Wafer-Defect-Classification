@@ -9,7 +9,7 @@ print('=' * 65)
 train_ds, val_ds, test_ds, class_names = load_datasets()
 
 models = [
-    ('Custom CN'', 'best_cnn.keras'),
+    ('Custom CNN', 'best_cnn.keras'),
     ('MobileNetV2', 'best_mobilenet.keras'),
     ('ResNet50', 'best_resnet50.keras'),
 ]
@@ -27,7 +27,7 @@ for name, filename in models:
             model = tf.keras.models.load_model(str(path), compile=False)
             model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
             loss, acc = model.evaluate(test_ds, verbose=0)
-            print(f"{name:<20} | {path.name:<22} | {acc*q00:11.2f}%  | {loss:.4f}")
+            print(f"{name:<20} | {path.name:<22} | {acc*100:11.2f}%  | {loss:.4f}")
         except Exception as exc:
             print(f"{name:<20} | {path.name:<22} | Error loading model: {exc}")
     else:

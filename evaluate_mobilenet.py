@@ -46,7 +46,7 @@ val_ds = tf.data.Dataset.from_tensor_slices(
 
 val_ds = val_ds.map(load_image).batch(BATCH_SIZE)
 
-model = tf.keras.models.load_model("mobilenet_wafer.keras")
+model = tf.keras.models.load_model("best_mobilenet.keras")
 
 loss, accuracy = model.evaluate(val_ds)
 

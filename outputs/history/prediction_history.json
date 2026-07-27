@@ -1,0 +1,53 @@
+[
+  {
+    "timestamp": "2026-07-23 23:11:58",
+    "predicted_class": "Edge-Ring",
+    "confidence": 0.6693,
+    "inference_time_seconds": 3.5174,
+    "probabilities": {
+      "Center": 0.0088,
+      "Donut": 0.1192,
+      "Edge-Loc": 0.0281,
+      "Edge-Ring": 0.6693,
+      "Loc": 0.0345,
+      "Near-full": 0.0214,
+      "Random": 0.1074,
+      "Scratch": 0.0091,
+      "none": 0.0022
+    }
+  },
+  {
+    "timestamp": "2026-07-24 06:24:43",
+    "predicted_class": "Near-full",
+    "confidence": 0.794,
+    "inference_time_seconds": 1.4541,
+    "probabilities": {
+      "Center": 0.0614,
+      "Donut": 0.0012,
+      "Edge-Loc": 0.0068,
+      "Edge-Ring": 0.0281,
+      "Loc": 0.0062,
+      "Near-full": 0.794,
+      "Random": 0.0445,
+      "Scratch": 0.0314,
+      "none": 0.0264
+    }
+  },
+  {
+    "timestamp": "2026-07-24 09:18:37",
+    "predicted_class": "Random",
+    "confidence": 0.9932,
+    "inference_time_seconds": 17.9935,
+    "probabilities": {
+      "Center": 0.0,
+      "Donut": 0.0001,
+      "Edge-Loc": 0.0,
+      "Edge-Ring": 0.0066,
+      "Loc": 0.0,
+      "Near-full": 0.0,
+      "Random": 0.9932,
+      "Scratch": 0.0001,
+      "none": 0.0
+    }
+  }
+]
