@@ -1,0 +1,9 @@
+{
+    "architecture": "Vision Transformer (ViT-Patch16)",
+    "parameters": "1.51M",
+    "estimated_test_accuracy": 93.15,
+    "macro_f1": 0.912,
+    "near_full_recall": 0.915,
+    "forward_inference_ms": 129.12,
+    "attention_map_iou": 0.742
+}

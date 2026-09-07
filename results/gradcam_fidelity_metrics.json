@@ -1,0 +1,44 @@
+{
+    "Center": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.0003663598618004471
+    },
+    "Donut": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.0
+    },
+    "Edge-Ring": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.041397832334041595
+    },
+    "Edge-Loc": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.0
+    },
+    "Loc": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.0
+    },
+    "Scratch": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.00481112115085125
+    },
+    "Near-full": {
+        "iou": 0.27591538429260254,
+        "dice": 0.43249794840812683,
+        "pointing_hit": 0.0,
+        "energy_ratio": 0.6074215769767761
+    }
+}
