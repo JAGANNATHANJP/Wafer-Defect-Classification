@@ -9,7 +9,7 @@
 
 In modern semiconductor fabrication, automated visual inspection of silicon wafer maps is critical for identifying equipment drifts and preventing catastrophic yield loss. While deep convolutional neural networks (CNNs) have achieved high classification accuracy on wafer maps, black-box model decisions create severe trust barriers in cleanroom environments, preventing process engineers from executing tool maintenance based on unverified predictions. Although Explainable AI (XAI) techniques such as Grad-CAM are frequently applied qualitatively, their visual explanations have rarely been quantitatively validated against physical defect boundaries. 
 
-In this paper, we present a quantitative evaluation framework for Grad-CAM explanation fidelity in wafer defect classification. We define a metric suite—comprising Intersection over Union (IoU), Dice Coefficient, Pointing Game Accuracy, and Inside-Mask Energy Ratio—to evaluate whether visual explanations correspond to physically meaningful defect regions across spatial defect morphologies evaluated on **90,043 silicon wafer maps**. Furthermore, we evaluate the trade-offs between classification accuracy, macro-F1, parameters, latency, and explanation fidelity across Convolutional (Custom CNN, ResNet50), Lightweight Edge (MobileNetV2), and Vision Transformer (ViT) architectures. Evaluating fine-tuned ResNet50 (**92.00% Test Accuracy**, **0.891 Macro-F1**), MobileNetV2 (79.78%), and Custom CNN (44.22%), we demonstrate how die-level defect segmentation provides an objective benchmark for visual explanation accuracy. Empirical evaluation on real test wafer images reveals that Grad-CAM achieves high pointing accuracy (**95.0%**) and high energy concentration (**94.87%**) on continuous circumferential patterns like *Edge-Ring*, but exhibits spatial localization breakdown on thin geometric anomalies such as *Scratch* ($\text{Mean IoU} = 0.0383$). Finally, we measure disaggregated single-image latency across preprocessing, forward inference, and heatmap generation to evaluate real-time cleanroom operational constraints.
+In this paper, we present a quantitative evaluation framework for Grad-CAM explanation fidelity in wafer defect classification. We define a metric suite—comprising Intersection over Union (IoU), Dice Coefficient, Pointing Game Accuracy, and Inside-Mask Energy Ratio—to evaluate whether visual explanations correspond to physically meaningful defect regions across spatial defect morphologies evaluated on **90,043 silicon wafer maps**. Furthermore, we evaluate the trade-offs between classification accuracy, macro-F1, parameters, latency, and explanation fidelity across Convolutional (Custom CNN, ResNet50), Lightweight Edge (MobileNetV2), and Vision Transformer (ViT) architectures. Evaluating fine-tuned ResNet50 (**92.00% Test Accuracy**, **0.891 Macro-F1**), MobileNetV2 (79.78%), and Custom CNN (44.22%), we demonstrate how die-level defect segmentation provides an objective benchmark for visual explanation accuracy. Empirical evaluation on real test wafer images reveals that Grad-CAM achieves high pointing accuracy (**95.0%**) and high energy concentration (**94.87%**) on continuous circumferential patterns like *Edge-Ring*, but exhibits spatial localization breakdown on thin geometric anomalies such as *Scratch* ($\text{Mean IoU} = 0.0383$). We further investigate the relationship between prediction confidence and explanation fidelity, examining whether explanation quality can provide an additional signal for identifying potentially unreliable predictions. Finally, we measure disaggregated single-image latency across preprocessing, forward inference, and heatmap generation to evaluate real-time cleanroom operational constraints.
 
 **Keywords:** Semiconductor Wafer Inspection, Explainable AI (XAI), Grad-CAM Fidelity, Quantitative Model Trustworthiness, Vision Transformers, Disaggregated Latency.
 
@@ -43,10 +43,10 @@ While recent studies have introduced deep learning backbones for wafer defect cl
 
 To address these gaps, this paper provides four structured contributions:
 
-1. **Primary Contribution (Quantitative Explanation Validation Framework):** We formulate a metric suite (IoU, Dice Coefficient, Pointing Game Accuracy, and Inside-Mask Energy Ratio) to benchmark Grad-CAM and attention map fidelity against defect die regions across spatial wafer defect morphologies.
-2. **Secondary Contribution (Fidelity Degradation Across Morphologies & Outcomes):** We analyze how visual explanation quality varies across defect patterns (*Center*, *Donut*, *Edge-Ring*, *Scratch*) and demonstrate how explanation fidelity breakdown serves as an early indicator of unreliability on misclassified samples.
-3. **Supporting Contribution (Multi-Architecture Trade-Off Analysis):** We present a comparative evaluation across Convolutional (Custom CNN, ResNet50), Lightweight Edge (MobileNetV2), and Vision Transformer (ViT) models evaluating **Accuracy, Macro-F1, Minority Recall, Parameters, Latency, and Explanation Fidelity**.
-4. **Engineering Contribution (Deployable Latency-Aware Inspection System):** We demonstrate a production-ready cleanroom inspection web dashboard (`WaferScan Pro AI`) with measured disaggregated latency across preprocessing, forward inference, and heatmap generation.
+1. **A quantitative framework for evaluating Grad-CAM explanation fidelity in wafer-defect classification:** We formulate a metric suite (IoU, Dice Coefficient, Pointing Game Accuracy, and Inside-Mask Energy Ratio) to benchmark Grad-CAM and attention map fidelity against defect die regions across spatial wafer defect morphologies.
+2. **A morphology-wise analysis of explanation quality across different defect patterns and prediction outcomes:** We analyze how visual explanation quality varies across defect patterns (*Center*, *Donut*, *Edge-Ring*, *Scratch*) and evaluate explanation fidelity behavior on correct vs. misclassified predictions.
+3. **A multi-architecture evaluation of accuracy, class imbalance performance, latency, and explanation fidelity:** We present a comparative evaluation across Convolutional (Custom CNN, ResNet50), Lightweight Edge (MobileNetV2), and Vision Transformer (ViT) models evaluating **Accuracy, Macro-F1, Minority Recall, Parameters, Latency, and Explanation Fidelity**.
+4. **A measured inference-and-explanation pipeline for real-time inspection constraints:** We demonstrate an industrial cleanroom inspection web dashboard (`WaferScan Pro AI`) with measured disaggregated latency across preprocessing, forward inference, and heatmap generation.
 
 ---
 
@@ -107,6 +107,8 @@ Experiments were conducted on **90,043 silicon wafer spatial maps** partitioned 
 
 Because silicon wafer maps consist of spatial die grids where individual non-zero pixels correspond to defective dies, ground-truth defect masks $M(x, y)$ are extracted by segmenting active defect die intensity pixels ($I_{wafer}(x,y) > \text{threshold}$).
 
+> **Note on Evaluation Scope:** The fidelity evaluation is restricted to defect-containing wafers (8 classes) because defect-free (`none`) samples do not possess a ground-truth defect region mask ($M = \mathbf{0}$).
+
 ![Figure 1: Grad-CAM Fidelity Across Defect Morphologies](file:///C:/Users/jpjag/.gemini/antigravity-ide/brain/59151773-0ec3-40d0-abd5-3e7c0cca2104/fig1_gradcam_fidelity_by_morphology.png)
 
 ### 4.2 9 Defect Class Taxonomy & Fab Remediation Engine
@@ -151,11 +153,13 @@ Because silicon wafer maps consist of spatial die grids where individual non-zer
 | **Loc** | 40 | 0.0% | 0.0002 (0.02%) | 0.0000 | 0.0000 |
 | **Edge-Loc** | 40 | 0.0% | 0.0000 (0.00%) | 0.0000 | 0.0000 |
 
-### 5.3 Explanation Fidelity vs Prediction Confidence
+### 5.3 Scientific Discussion: Pointing Game Accuracy vs. Spatial Overlap (IoU)
+
+Empirical results reveal a crucial distinction between **spatial location awareness** and **pixel-level boundary tightness**:
+- **High Pointing Accuracy vs. Low IoU:** On *Edge-Ring* patterns, Grad-CAM achieves a **95.0% Pointing Game Hit Rate** and **94.87% Energy Ratio**, indicating that the peak feature activation reliably targets the defective wafer region. However, an IoU of **0.1918** demonstrates that coarse feature activation maps ($7 \times 7$ upscaled to $224 \times 224$) over-extend beyond the exact die mask boundaries.
+- **Thin Geometries:** On linear patterns like *Scratch*, Grad-CAM exhibits spatial localization breakdown ($\text{IoU} = 0.0383$), proving that coarse CNN activations struggle to isolate fine-grained geometric anomalies.
 
 ![Figure 3: Explanation Fidelity Degradation](file:///C:/Users/jpjag/.gemini/antigravity-ide/brain/59151773-0ec3-40d0-abd5-3e7c0cca2104/fig3_confidence_vs_fidelity_correlation.png)
-
-Correctly classified wafer samples exhibit a positive correlation between prediction confidence and explanation energy concentration. Conversely, misclassified samples (false positives) display severe fidelity degradation ($IoU < 0.02$), establishing explanation quality as an effective real-time confidence calibration signal.
 
 ---
 
@@ -173,13 +177,13 @@ We disaggregate single-image ($N=1$) processing latency across native CPU execut
 | **2. Model Forward Pass** | 527.73 ms | 6.40 ms | ResNet50 forward pass |
 | **3. Grad-CAM Generation** | 1259.48 ms | 8.20 ms | Dual-stage `tf.GradientTape` activation extraction |
 | **4. Streamlit UI Rendering**| 12.00 ms | 12.00 ms | Plotly polar spatial density rendering |
-| **TOTAL (Model + XAI)** | **1787.21 ms (~1.79s)**| **14.61 ms** | **Pure Model + Interpretability Pipeline** |
-| **TOTAL (End-to-End User)** | **1799.42 ms (~1.80s)**| **26.61 ms** | **Full Streamlit Web Pipeline (<35 ms on GPU)** |
+| **Subtotal (Model + XAI)** | **1787.42 ms (~1.79s)**| **14.81 ms** | **Pure Model + Interpretability Pipeline** |
+| **TOTAL (End-to-End User)** | **1799.42 ms (~1.80s)**| **26.81 ms** | **Full Streamlit Web Pipeline (<35 ms on GPU)** |
 
 ---
 
 ## 7. Conclusion & Future Roadmap
 
-In this paper, we presented a quantitative explanation validation framework for semiconductor wafer defect inspection. By defining metrics such as IoU, Dice Coefficient, Pointing Game Accuracy, and Energy Ratio across spatial defect morphologies evaluated on **90,043 wafer maps**, we shifted XAI evaluation from qualitative visual inspection to empirical quantitative validation. Our benchmark established that fine-tuned ResNet50 delivers **92.00% Test Accuracy** and an **0.891 Macro-F1**, with **95.0% Pointing Accuracy** and **94.87% Energy Ratio** on *Edge-Ring* defects. Empirical single-image latency was measured at **1.79 s on CPU** and estimated at **26.61 ms on GPU hardware**.
+In this paper, we presented a quantitative explanation validation framework for semiconductor wafer defect inspection. By defining metrics such as IoU, Dice Coefficient, Pointing Game Accuracy, and Energy Ratio across spatial defect morphologies evaluated on **90,043 wafer maps**, we shifted XAI evaluation from qualitative visual inspection to empirical quantitative validation. Our benchmark established that fine-tuned ResNet50 delivers **92.00% Test Accuracy** and an **0.891 Macro-F1**, with **95.0% Pointing Accuracy** and **94.87% Energy Ratio** on *Edge-Ring* defects. Single-image processing latency was measured at **1.79 s on CPU** and estimated at **26.81 ms on GPU hardware**.
 
 **Future Directions:** Extending the framework to multi-label compound defect classification, benchmarking Swin Transformers, and deploying TensorRT graph compilation for sub-5ms cleanroom edge devices.
