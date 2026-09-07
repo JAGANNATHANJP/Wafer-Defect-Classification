@@ -1,0 +1,9 @@
+{
+    "hardware": "Intel Core i7 / x86_64 Native CPU",
+    "batch_size": 1,
+    "preprocessing_ms": 0.21,
+    "forward_inference_ms": 527.73,
+    "gradcam_generation_ms": 1259.48,
+    "total_model_plus_xai_ms": 1787.21,
+    "total_pipeline_with_ui_ms": 1799.42
+}
