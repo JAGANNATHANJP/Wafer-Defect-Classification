@@ -1,0 +1,9 @@
+{
+    "sample_count_correct": 30,
+    "sample_count_incorrect": 210,
+    "mean_confidence_correct": 0.5791,
+    "mean_confidence_incorrect": 0.5843,
+    "mean_iou_correct": 0.1022,
+    "mean_iou_incorrect": 0.2929,
+    "confidence_fidelity_correlation_r": 0.6047
+}
